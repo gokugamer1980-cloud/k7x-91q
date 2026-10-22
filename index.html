@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAI</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RAI">
+<meta name="theme-color" content="#050b14">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+
+<style>
+:root{--bg:#050b14;--fg:#d6f6ff;--ac:#22d3ee;--mut:#6b8da0;--card:#0b1726;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif}
+body{display:flex;flex-direction:column;background:radial-gradient(circle at 50% 0,#0a2740 0,var(--bg) 55%)}
+h1{margin:0;text-align:center;font-size:18px;letter-spacing:.5em;font-weight:600;color:var(--ac);padding-left:.5em}
+.core{width:104px;height:104px;margin:14px auto 8px;position:relative;flex:none}
+.core i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--ac);opacity:.65;animation:spin 6s linear infinite}
+.core i:nth-child(2){inset:14px;border-style:dashed;animation-duration:9s;animation-direction:reverse}
+.core i:nth-child(3){inset:32px;border:0;background:radial-gradient(circle,#cffafe,var(--ac) 55%,transparent 72%);animation:pulse 2.6s ease-in-out infinite;opacity:.9}
+body.busy .core i:nth-child(3){animation-duration:.7s}
+body.busy .core i:nth-child(1){animation-duration:1.5s}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.2);opacity:1}}
+#log{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:6px 0}
+.m{max-width:85%;margin:5px 12px;padding:10px 13px;border-radius:14px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px}
+.u{align-self:flex-end;background:#0e3a4a}
+.a{align-self:flex-start;background:var(--card);border:1px solid #12304a}
+.bar{display:flex;gap:8px;padding:8px 12px 10px;flex:none}
+#in{flex:1;min-width:0;font-size:16px;padding:11px 14px;border-radius:22px;border:1px solid #12304a;background:var(--card);color:var(--fg);outline:none}
+#in:focus{border-color:var(--ac)}
+button{width:40px;height:40px;flex:none;border-radius:50%;border:1px solid #12304a;background:var(--card);color:var(--fg);font-size:18px;cursor:pointer}
+button.on{background:var(--ac);color:#031018}
+#go{background:var(--ac);color:#031018;font-weight:700}
+.hint{text-align:center;color:var(--mut);font-size:12px;padding:0 12px 2px}
+body{position:relative;z-index:0;background:radial-gradient(circle at 50% 18%,#0b3350 0,#061424 38%,var(--bg) 70%)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(34,211,238,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.06) 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:radial-gradient(circle at 50% 20%,#000,transparent 75%);mask-image:radial-gradient(circle at 50% 20%,#000,transparent 75%)}
+body.busy{--ac:#fbbf24}
+body.listening{--ac:#4ade80}
+body.speaking{--ac:#a78bfa}
+.core{width:130px;height:130px;margin:24px auto 8px}
+.core::before{content:"";position:absolute;inset:-12px;border-radius:50%;border:2px solid transparent;border-top-color:var(--ac);border-bottom-color:var(--ac);animation:spin 4s linear infinite;filter:drop-shadow(0 0 6px var(--ac))}
+.core::after{content:"";position:absolute;inset:-24px;border-radius:50%;border:1px dotted var(--ac);opacity:.5;animation:spin 22s linear infinite reverse}
+.core i{box-shadow:0 0 14px var(--ac)}
+.core i:nth-child(3){inset:40px;box-shadow:0 0 44px var(--ac)}
+body.listening .core i:nth-child(3),body.speaking .core i:nth-child(3){animation-duration:1s}
+h1{font-family:ui-monospace,Menlo,monospace;text-shadow:0 0 14px var(--ac)}
+#stat{text-align:center;font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.3em;color:var(--ac);opacity:.85;margin:2px 0 6px;padding-left:.3em}
+.a{border-color:rgba(34,211,238,.35);box-shadow:0 0 14px rgba(34,211,238,.08)}
+#log{-webkit-mask-image:linear-gradient(transparent,#000 22px);mask-image:linear-gradient(transparent,#000 22px)}
+#join{position:fixed;inset:0;background:rgba(5,11,20,.97);z-index:10;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);overflow:auto;display:flex;flex-direction:column;gap:12px}
+#join[hidden]{display:none}
+.tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:4px 12px 0;flex:none}
+.pill{width:auto;height:36px;border-radius:20px;padding:0 16px;font-size:15px}
+#mem{position:fixed;inset:0;background:rgba(5,11,20,.97);z-index:10;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);overflow:auto;display:flex;flex-direction:column;gap:12px}
+#mem[hidden]{display:none}
+#mem b{color:var(--ac);font-size:18px}
+.note{display:flex;gap:8px;align-items:flex-start;background:var(--card);border:1px solid #12304a;border-radius:12px;padding:8px 10px}
+.note span{flex:1;line-height:1.35;overflow-wrap:anywhere}
+.note button{width:32px;height:32px;font-size:14px}
+#mem textarea,#mem input{font-size:16px;padding:10px;border-radius:12px;border:1px solid #12304a;background:var(--card);color:var(--fg);font-family:inherit;width:100%;box-sizing:border-box}
+#join b{color:var(--ac);font-size:18px}
+#join input[type=file]{color:var(--fg);font-size:16px}
+#finfo{white-space:pre-wrap;color:var(--mut);font-size:14px}
+.wide{width:100%;border-radius:12px;height:44px;font-size:16px}
+#out{width:100%;border-radius:12px;background:#000}
+#subs{font-size:16px;padding:10px;border-radius:12px;border:1px solid #12304a;background:var(--card);color:var(--fg);font-family:inherit;width:100%;box-sizing:border-box}
+</style>
+</head>
+<body>
+<div class="core"><i></i><i></i><i></i></div>
+<h1>RAI</h1>
+<div id="stat">EN ESPERA</div>
+<div id="log"></div>
+<div class="hint">Di «recuerda …» para que guarde algo · «olvida todo» para borrarlo</div>
+<div class="tools"><button id="conv" class="pill">🗣️ Modo conversación</button><button id="wakeBtn" class="pill">👂 Oye RAI</button>
+<button id="memBtn" class="pill">🧠 Memoria</button></div>
+<div class="bar">
+<button id="film" title="Unir clips">🎞️</button>
+<button id="dir" title="Director">🎬</button>
+<button id="mic" title="Hablar">🎤</button>
+<input id="in" placeholder="Escribe a RAI…" autocomplete="off">
+<button id="vol" class="on" title="Voz">🔊</button>
+<button id="go" title="Enviar">➤</button>
+</div>
+<div id="mem" hidden>
+<b>Clave de IA</b>
+<input id="apiKey" type="password" placeholder="Pega aquí tu clave (sk-ant-...)" autocomplete="off">
+<button id="saveKey" class="wide">Guardar clave</button>
+<div style="color:var(--mut);font-size:13px">Se guarda solo en este móvil. Pon un límite de gasto en tu cuenta de la API.</div>
+<b>Memoria de RAI</b>
+<div id="notesList"></div>
+<div style="display:flex;gap:8px"><input id="newNote" placeholder="Añadir algo que RAI deba recordar"><button id="addNote">+</button></div>
+<b>Personalidad</b>
+<textarea id="persona" rows="6"></textarea>
+<button id="savePersona" class="wide">Guardar personalidad</button>
+<button id="resetPersona" class="wide">Restaurar la de origen</button>
+<button id="closeMem" class="wide">Cerrar</button>
+</div>
+<div id="join" hidden>
+<b>Unir clips</b>
+<div style="color:var(--mut);font-size:14px">Elige los clips en el orden en que quieres verlos. Los clips salen sin audio: abajo puedes añadir una pista de audio (música o voz).</div>
+<input type="file" id="files" accept="video/*" multiple>
+<div style="color:var(--mut);font-size:14px">Audio (opcional):</div>
+<input type="file" id="aud" accept="audio/*">
+<div style="color:var(--mut);font-size:14px">Subtítulos (opcional): una línea por frase, con segundo de inicio y de fin. Ejemplo: 0-3 Hola, soy RAI</div>
+<textarea id="subs" rows="4" placeholder="0-3 Hola, soy RAI&#10;3-6 ¿Dónde estoy?"></textarea>
+<div id="finfo"></div>
+<button id="doJoin" class="wide">Unir</button>
+<video id="out" controls playsinline hidden></video>
+<button id="saveJ" class="wide" hidden>Guardar vídeo</button>
+<button id="closeJ" class="wide">Cerrar</button>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const log=$('#log'),inp=$('#in'),mic=$('#mic'),vol=$('#vol');
+let hist=[],notes=[],voiceOn=true,sample=null,busy=false,conv=false,speaking=false,curRec=null,wake=false,awaiting=false;
+try{notes=JSON.parse(localStorage.getItem('rai-notes')||'[]')}catch(e){}
+try{hist=JSON.parse(localStorage.getItem('rai-hist')||'[]')}catch(e){}
+function saveHist(){try{localStorage.setItem('rai-hist',JSON.stringify(hist))}catch(e){}}
+const DEF_PERSONA='Eres cercano, directo y con un toque de humor elegante, como un Jarvis amable. Hablas en español de España, tuteas al usuario y, si sabes su nombre por tu memoria, le llamas por su nombre. Respuestas cortas, pensadas para oírse en voz alta, sin listas largas ni formato raro. Si no sabes algo, lo dices y no inventas datos.';
+let persona=DEF_PERSONA;
+try{persona=localStorage.getItem('rai-persona')||DEF_PERSONA}catch(e){}
+const clean=s=>s.replace(/\[\[RECORDAR:[^\]]*(\]\])?/gi,'').trim();
+function save(){try{localStorage.setItem('rai-notes',JSON.stringify(notes))}catch(e){}}
+function add(t,c){const d=document.createElement('div');d.className='m '+c;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+const MODEL='claude-sonnet-5-5';
+function getKey(){try{return localStorage.getItem('rai-key')||''}catch(e){return ''}}
+sample=async(prompt)=>{
+  const k=getKey();
+  if(!k)throw {code:'nokey'};
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:MODEL,max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+  const j=await res.json();
+  if(!res.ok)throw {code:'api',msg:(j.error&&j.error.message)||res.status};
+  return {text:(j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('')};
+};
+function speak(t){
+  if(!voiceOn||!window.speechSynthesis||t.length>350)return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t.replace(/[*#`_>]/g,''));
+    u.lang='es-ES';
+    const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith('es'));
+    if(v)u.voice=v;
+    speaking=true;u.onend=u.onerror=()=>{speaking=false;listen()};
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+async function send(text){
+  text=(text||'').trim();
+  if(!text||busy)return;
+  inp.value='';
+  add(text,'u');
+  if(/(une|unir|junta|juntar).*clip/i.test(text)){$('#join').hidden=false;add('Abro el unidor de clips.','a');return}
+  const m=text.match(/^recuerda\s+(.+)/i);
+  if(m){notes.push(m[1]);save()}
+  if(/^olvida todo/i.test(text)){notes=[];hist=[];save();saveHist()}
+  if(!getKey()){add('Primero pega tu clave de IA en el panel Memoria.','a');$('#memBtn').click();return}
+  busy=true;document.body.classList.add('busy');
+  const el=add('…','a');
+  const prompt='Eres RAI, el asistente personal del usuario. '+persona+' MODO DIRECTOR: si el usuario te pide escenas o prompts de vídeo para su serie, usa lo que sepas de ella en tu memoria (personajes, historia, estilo) y responde clip a clip (Clip 1, Clip 2...): una línea en español de qué pasa y el prompt completo para Kling en inglés, repitiendo SIEMPRE la descripción física de cada personaje para que no cambie de aspecto. Los clips salen sin audio, así que añade aparte el diálogo o texto para ponerlo después. Si faltan detalles, propónlos y pregunta si le gustan. En modo director puedes alargarte.\nLo que sabes del usuario (tu memoria): '+(notes.join('; ')||'todavía nada')+'. Si el usuario te cuenta algo importante y duradero sobre él, sus proyectos o sus gustos, o te pide que lo recuerdes, añade al final de tu respuesta una etiqueta [[RECORDAR: dato corto]] (puedes poner varias). No la uses para cosas pasajeras ni para datos sensibles como contraseñas o claves.\n\nConversación:\n'+hist.slice(-12).map(x=>(x.r==='u'?'Usuario: ':'RAI: ')+x.t).join('\n')+'\nUsuario: '+text+'\nRAI:';
+  try{
+    const r=await sample(prompt,{cache:false,onText:({text})=>{el.textContent=clean(text);log.scrollTop=log.scrollHeight}});
+    const tags=[...r.text.matchAll(/\[\[RECORDAR:\s*([^\]]+)\]\]/gi)];
+    if(tags.length){tags.forEach(t=>{const n=t[1].trim();if(n&&!notes.includes(n))notes.push(n)});notes=notes.slice(-60);save()}
+    const out=clean(r.text);
+    el.textContent=out;
+    hist.push({r:'u',t:text},{r:'a',t:out});hist=hist.slice(-40);saveHist();
+    speak(out);
+  }catch(e){
+    el.textContent=e&&e.code==='api'?'Error de la IA: '+e.msg:(e&&e.code==='nokey'?'Falta tu clave de IA.':'No he podido conectar. Revisa tu conexión y tu clave.');
+  }
+  busy=false;document.body.classList.remove('busy');
+  if((conv||wake)&&!speaking)listen();
+}
+$('#go').onclick=()=>send(inp.value);
+let joinBlob=null,joinExt='mp4';
+$('#film').onclick=()=>{$('#join').hidden=false};
+$('#closeJ').onclick=()=>{$('#join').hidden=true};
+$('#files').onchange=()=>{const f=[...$('#files').files];$('#finfo').textContent=f.map((x,i)=>(i+1)+'. '+x.name).join('\n')};
+$('#doJoin').onclick=async()=>{
+  const files=[...$('#files').files];
+  const b=$('#doJoin'),info=$('#finfo');
+  if(files.length<2){info.textContent='Elige al menos 2 clips.';return}
+  if(!window.MediaRecorder){info.textContent='Este navegador no puede unir vídeos.';return}
+  b.disabled=true;
+  const af=$('#aud').files[0];
+  const subs=$('#subs').value.split('\n').map(l=>l.trim().match(/^(\d+(?:[.,]\d+)?)\s*[-–]\s*(\d+(?:[.,]\d+)?)\s+(.+)$/)).filter(Boolean).map(m=>({a:parseFloat(m[1].replace(',','.')),b:parseFloat(m[2].replace(',','.')),t:m[3]}));
+  let ctx=null,au=null;
+  if(af){try{ctx=new (window.AudioContext||window.webkitAudioContext)();ctx.resume()}catch(e){ctx=null}}
+  try{
+    const urls=files.map(f=>URL.createObjectURL(f));
+    const v=document.createElement('video');
+    v.muted=true;v.playsInline=true;v.setAttribute('playsinline','');v.preload='auto';
+    v.src=urls[0];
+    await new Promise((r,j)=>{v.onloadedmetadata=r;v.onerror=j});
+    const w=v.videoWidth,h=v.videoHeight;
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    const x=c.getContext('2d');
+    const mime=MediaRecorder.isTypeSupported('video/mp4')?'video/mp4':'video/webm';
+    joinExt=mime==='video/mp4'?'mp4':'webm';
+    const stream=c.captureStream(30);
+    if(af&&ctx){
+      au=new Audio(URL.createObjectURL(af));
+      const src=ctx.createMediaElementSource(au);
+      const dst=ctx.createMediaStreamDestination();
+      src.connect(dst);
+      stream.addTrack(dst.stream.getAudioTracks()[0]);
+    }
+    const rec=new MediaRecorder(stream,{mimeType:mime});
+    const ch=[];
+    rec.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
+    rec.start(500);
+    if(au){au.currentTime=0;au.play().catch(()=>{})}
+    let raf;
+    const t0=performance.now();
+    const draw=()=>{
+      x.drawImage(v,0,0,w,h);
+      const t=(performance.now()-t0)/1000;
+      const s=subs.find(q=>t>=q.a&&t<q.b);
+      if(s){
+        const fs=Math.round(h*0.045);
+        x.font='bold '+fs+'px -apple-system,Helvetica,Arial,sans-serif';
+        x.textAlign='center';x.textBaseline='bottom';
+        x.lineWidth=fs/6;x.strokeStyle='#000';x.fillStyle='#fff';
+        const lines=[];let cur='';
+        for(const wd of s.t.split(' ')){
+          const tt=cur?cur+' '+wd:wd;
+          if(x.measureText(tt).width>w*0.9&&cur){lines.push(cur);cur=wd}else cur=tt;
+        }
+        lines.push(cur);
+        lines.forEach((ln,i)=>{const y=h-fs*0.8-(lines.length-1-i)*fs*1.2;x.strokeText(ln,w/2,y);x.fillText(ln,w/2,y)});
+      }
+      raf=requestAnimationFrame(draw);
+    };
+    draw();
+    for(let i=0;i<urls.length;i++){
+      b.textContent='Uniendo clip '+(i+1)+' de '+urls.length+'…';
+      await new Promise(async res=>{v.onended=res;v.onerror=res;v.src=urls[i];try{await v.play()}catch(e){res()}});
+    }
+    cancelAnimationFrame(raf);if(au)au.pause();
+    await new Promise(r=>{rec.onstop=r;rec.stop()});
+    joinBlob=new Blob(ch,{type:mime});
+    const o=$('#out');o.src=URL.createObjectURL(joinBlob);o.hidden=false;
+    $('#saveJ').hidden=false;
+    info.textContent='Listo. Míralo y, si te gusta, guárdalo.';
+  }catch(e){info.textContent='No he podido unirlos. Prueba con otros clips.'}
+  b.textContent='Unir';b.disabled=false;
+};
+$('#saveJ').onclick=async()=>{
+  if(!joinBlob)return;
+  const name='serie-rai.'+joinExt;
+  try{
+    const f=new File([joinBlob],name,{type:joinBlob.type});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}
+  }catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(joinBlob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+};
+$('#dir').onclick=()=>send('Dame los prompts del capítulo 1, clip a clip');
+inp.addEventListener('keydown',e=>{if(e.key==='Enter')send(inp.value)});
+vol.onclick=()=>{voiceOn=!voiceOn;vol.classList.toggle('on',voiceOn);vol.textContent=voiceOn?'🔊':'🔇';if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel()};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){mic.style.display='none'}else{
+  mic.onclick=()=>{
+    try{
+      const r=new SR();r.lang='es-ES';r.interimResults=false;
+      r.onresult=e=>send(e.results[0][0].transcript);
+      r.onend=()=>mic.classList.remove('on');
+      r.onerror=()=>mic.classList.remove('on');
+      r.start();mic.classList.add('on');
+    }catch(e){}
+  };
+}
+function listen(){
+  if((!conv&&!wake)||busy||speaking||!SR)return;
+  try{
+    const r=new SR();curRec=r;
+    r.lang='es-ES';r.interimResults=false;
+    let got=false;
+    r.onresult=e=>{
+      got=true;
+      const t=e.results[0][0].transcript;
+      if(conv||awaiting){awaiting=false;send(t);return}
+      const m=t.match(WAKE);
+      if(!m){got=false;return}
+      const rest=t.slice(m.index+m[0].length).replace(/^[\s,.:;]+/,'').trim();
+      if(rest.length>2){send(rest)}
+      else{awaiting=true;add('Dime…','a');if(voiceOn&&window.speechSynthesis)speak('Dime');else setTimeout(listen,400)}
+    };
+    r.onend=()=>{mic.classList.remove('on');if((conv||wake)&&!got&&!busy&&!speaking)setTimeout(listen,300)};
+    r.onerror=e=>{mic.classList.remove('on');if(e&&(e.error==='not-allowed'||e.error==='service-not-allowed')){conv=false;wake=false;$('#wakeBtn').classList.remove('on');$('#wakeBtn').textContent='👂 Oye RAI';const b=$('#conv');b.classList.remove('on');b.textContent='🗣️ Modo conversación';add('No tengo permiso para escucharte. Actívalo en los ajustes del navegador.','a')}};
+    r.start();mic.classList.add('on');
+  }catch(e){}
+}
+$('#conv').onclick=()=>{
+  if(!SR){add('Este navegador no puede escucharme.','a');return}
+  if(!conv&&wake)stopWake();conv=!conv;
+  const b=$('#conv');
+  b.classList.toggle('on',conv);
+  b.textContent=conv?'🗣️ Escuchando… (toca para parar)':'🗣️ Modo conversación';
+  if(conv){
+    try{if(window.speechSynthesis)speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}
+    listen();
+  }else{
+    try{if(curRec)curRec.abort()}catch(e){}
+    try{if(window.speechSynthesis)speechSynthesis.cancel()}catch(e){}
+    mic.classList.remove('on');
+  }
+};
+const WAKE=/\b(oye|hey|ey)\s*,?\s*(rai|raí|ray|rayo|rae|rey|rail)/i;
+function stopWake(){
+  wake=false;awaiting=false;
+  const b=$('#wakeBtn');b.classList.remove('on');b.textContent='👂 Oye RAI';
+  try{if(curRec)curRec.abort()}catch(e){}
+  mic.classList.remove('on');
+}
+$('#wakeBtn').onclick=()=>{
+  if(!SR){add('Este navegador no puede escucharme.','a');return}
+  if(wake){stopWake();return}
+  if(conv){$('#conv').click()}
+  wake=true;
+  const b=$('#wakeBtn');b.classList.add('on');b.textContent='👂 Esperando «Oye RAI»… (toca para parar)';
+  try{if(window.speechSynthesis)speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}
+  listen();
+};
+function upd(){
+  const c=document.body.classList,on=mic.classList.contains('on');
+  c.toggle('listening',on&&!busy&&!speaking);
+  c.toggle('speaking',speaking&&!busy);
+  $('#stat').textContent=busy?'PROCESANDO':speaking?'HABLANDO':on?'ESCUCHANDO':'EN ESPERA';
+}
+setInterval(upd,250);
+$('#saveKey').onclick=()=>{const v=$('#apiKey').value.trim();if(v){try{localStorage.setItem('rai-key',v)}catch(e){}$('#apiKey').value='';$('#apiKey').placeholder='Clave guardada ✓';}};
+function renderNotes(){
+  const l=$('#notesList');l.innerHTML='';
+  if(!notes.length){const e=document.createElement('div');e.style.color='var(--mut)';e.textContent='Todavía no recuerdo nada. Díselo a RAI o añádelo aquí.';l.appendChild(e)}
+  notes.forEach((n,i)=>{
+    const d=document.createElement('div');d.className='note';
+    const s=document.createElement('span');s.textContent=n;
+    const b=document.createElement('button');b.textContent='✕';
+    b.onclick=()=>{notes.splice(i,1);save();renderNotes()};
+    d.append(s,b);l.appendChild(d);
+  });
+}
+$('#memBtn').onclick=()=>{renderNotes();$('#persona').value=persona;$('#mem').hidden=false};
+$('#closeMem').onclick=()=>{$('#mem').hidden=true};
+$('#addNote').onclick=()=>{const v=$('#newNote').value.trim();if(v){notes.push(v);save();$('#newNote').value='';renderNotes()}};
+$('#savePersona').onclick=()=>{persona=$('#persona').value.trim()||DEF_PERSONA;try{localStorage.setItem('rai-persona',persona)}catch(e){}$('#mem').hidden=true};
+$('#resetPersona').onclick=()=>{persona=DEF_PERSONA;try{localStorage.removeItem('rai-persona')}catch(e){}$('#persona').value=persona};
+if(hist.length){hist.forEach(x=>add(x.t,x.r))}else{add('Hola, soy RAI. ¿En qué te ayudo?','a')}
+</script>
+</body>
+</html>
