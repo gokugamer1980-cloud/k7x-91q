@@ -70,6 +70,11 @@ h1{font-family:ui-monospace,Menlo,monospace;text-shadow:0 0 14px var(--ac)}
 #att[hidden]{display:none}
 #att span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #att button{width:28px;height:28px;font-size:13px}
+#tasks{position:fixed;inset:0;background:rgba(5,11,20,.97);z-index:10;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);overflow:auto;display:flex;flex-direction:column;gap:12px}
+#tasks[hidden]{display:none}
+#tasks b{color:var(--ac);font-size:18px}
+#tasks input{font-size:16px;padding:10px;border-radius:12px;border:1px solid #12304a;background:var(--card);color:var(--fg);font-family:inherit;width:100%;box-sizing:border-box}
+.note.done span{text-decoration:line-through;opacity:.55}
 </style>
 </head>
 <body>
@@ -80,6 +85,7 @@ h1{font-family:ui-monospace,Menlo,monospace;text-shadow:0 0 14px var(--ac)}
 <div class="hint">Di «recuerda …» para que guarde algo · «olvida todo» para borrarlo</div>
 <div id="att" hidden></div>
 <div class="tools"><button id="attBtn" class="pill">📎 Documento o foto</button><input type="file" id="attFile" accept="image/*,application/pdf" hidden><button id="conv" class="pill">🗣️ Modo conversación</button><button id="wakeBtn" class="pill">👂 Oye RAI</button>
+<button id="taskBtn" class="pill">✅ Tareas</button>
 <button id="memBtn" class="pill">🧠 Memoria</button></div>
 <div class="bar">
 <button id="film" title="Unir clips">🎞️</button>
@@ -88,6 +94,13 @@ h1{font-family:ui-monospace,Menlo,monospace;text-shadow:0 0 14px var(--ac)}
 <input id="in" placeholder="Escribe a RAI…" autocomplete="off">
 <button id="vol" class="on" title="Voz">🔊</button>
 <button id="go" title="Enviar">➤</button>
+</div>
+<div id="tasks" hidden>
+<b>Tareas</b>
+<div id="taskList"></div>
+<div style="display:flex;gap:8px"><input id="newTask" placeholder="Añadir una tarea"><button id="addTask">+</button></div>
+<button id="clearDone" class="wide">Borrar las hechas</button>
+<button id="closeTasks" class="wide">Cerrar</button>
 </div>
 <div id="mem" hidden>
 <b>Clave de IA</b>
@@ -127,7 +140,7 @@ function saveHist(){try{localStorage.setItem('rai-hist',JSON.stringify(hist))}ca
 const DEF_PERSONA='Eres cercano, directo y con un toque de humor elegante, como un Jarvis amable. Hablas en español de España, tuteas al usuario y, si sabes su nombre por tu memoria, le llamas por su nombre. Respuestas cortas, pensadas para oírse en voz alta, sin listas largas ni formato raro. Si no sabes algo, lo dices y no inventas datos.';
 let persona=DEF_PERSONA;
 try{persona=localStorage.getItem('rai-persona')||DEF_PERSONA}catch(e){}
-const clean=s=>s.replace(/\[\[RECORDAR:[^\]]*(\]\])?/gi,'').trim();
+const clean=s=>s.replace(/\[\[(?:RECORDAR|TAREA|HECHA|BORRAR|WHATSAPP):[^\]]*(\]\])?/gi,'').trim();
 function save(){try{localStorage.setItem('rai-notes',JSON.stringify(notes))}catch(e){}}
 function add(t,c){const d=document.createElement('div');d.className='m '+c;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
 const MODEL='claude-sonnet-5-5';
@@ -166,11 +179,13 @@ async function send(text){
   busy=true;document.body.classList.add('busy');
   const att=pending;pending=null;renderAtt();
   const el=add('…','a');
-  const prompt='Eres RAI, el asistente personal del usuario. '+persona+' MODO DIRECTOR: si el usuario te pide escenas o prompts de vídeo para su serie, usa lo que sepas de ella en tu memoria (personajes, historia, estilo) y responde clip a clip (Clip 1, Clip 2...): una línea en español de qué pasa y el prompt completo para Kling en inglés, repitiendo SIEMPRE la descripción física de cada personaje para que no cambie de aspecto. Los clips salen sin audio, así que añade aparte el diálogo o texto para ponerlo después. Si faltan detalles, propónlos y pregunta si le gustan. En modo director puedes alargarte.\nSi el usuario adjunta un documento o una foto, analízalo con cuidado antes de responder y explícalo con palabras sencillas y paso a paso: qué es, qué dice y lo importante (plazos, importes, qué tiene que hacer). Si algo no se lee bien o no estás seguro, dilo claramente sin inventar. En temas legales, médicos o de dinero explica lo que pone, pero recuerda que no eres abogado ni médico.\nLo que sabes del usuario (tu memoria): '+(notes.join('; ')||'todavía nada')+'. Si el usuario te cuenta algo importante y duradero sobre él, sus proyectos o sus gustos, o te pide que lo recuerdes, añade al final de tu respuesta una etiqueta [[RECORDAR: dato corto]] (puedes poner varias). No la uses para cosas pasajeras ni para datos sensibles como contraseñas o claves.\n\nConversación:\n'+hist.slice(-12).map(x=>(x.r==='u'?'Usuario: ':'RAI: ')+x.t).join('\n')+'\nUsuario: '+text+'\nRAI:';
+  const prompt='Eres RAI, el asistente personal del usuario. '+persona+' MODO DIRECTOR: si el usuario te pide escenas o prompts de vídeo para su serie, usa lo que sepas de ella en tu memoria (personajes, historia, estilo) y responde clip a clip (Clip 1, Clip 2...): una línea en español de qué pasa y el prompt completo para Kling en inglés, repitiendo SIEMPRE la descripción física de cada personaje para que no cambie de aspecto. Los clips salen sin audio, así que añade aparte el diálogo o texto para ponerlo después. Si faltan detalles, propónlos y pregunta si le gustan. En modo director puedes alargarte.\nSi el usuario adjunta un documento o una foto, analízalo con cuidado antes de responder y explícalo con palabras sencillas y paso a paso: qué es, qué dice y lo importante (plazos, importes, qué tiene que hacer). Si algo no se lee bien o no estás seguro, dilo claramente sin inventar. En temas legales, médicos o de dinero explica lo que pone, pero recuerda que no eres abogado ni médico.\nTareas del usuario (lista numerada): '+taskText()+'. Las cosas por hacer van a la lista de tareas, y los datos sobre el usuario van a la memoria. Si el usuario te pide apuntar algo o dice que tiene que hacer algo, añade al final de tu respuesta [[TAREA: texto corto]]. Si dice que ya hizo una tarea, marca [[HECHA: número]]. Para borrar una, [[BORRAR: número]]. Si te pregunta qué tiene pendiente, léeselas con calma. Confirma siempre en una frase corta. Para mandar un WhatsApp añade al final [[WHATSAPP: destinatario :: mensaje]]; si es para el propio usuario pon yo como destinatario, y si es para otra persona usa el nombre tal como lo dijo el usuario. Nunca digas que el mensaje ya se ha enviado: di que pulse el botón para enviarlo.\nLo que sabes del usuario (tu memoria): '+(notes.join('; ')||'todavía nada')+'. Si el usuario te cuenta algo importante y duradero sobre él, sus proyectos o sus gustos, o te pide que lo recuerdes, añade al final de tu respuesta una etiqueta [[RECORDAR: dato corto]] (puedes poner varias). No la uses para cosas pasajeras ni para datos sensibles como contraseñas o claves.\n\nConversación:\n'+hist.slice(-12).map(x=>(x.r==='u'?'Usuario: ':'RAI: ')+x.t).join('\n')+'\nUsuario: '+text+'\nRAI:';
   try{
     const r=await sample(prompt,att);
     const tags=[...r.text.matchAll(/\[\[RECORDAR:\s*([^\]]+)\]\]/gi)];
     if(tags.length){tags.forEach(t=>{const n=t[1].trim();if(n&&!notes.includes(n))notes.push(n)});notes=notes.slice(-60);save()}
+    applyTasks(r.text);
+    showWa(r.text);
     const out=clean(r.text);
     el.textContent=out;
     hist.push({r:'u',t:(att?'[adjunto: '+att.name+'] ':'')+text},{r:'a',t:out});hist=hist.slice(-40);saveHist();
@@ -360,6 +375,55 @@ $('#attFile').onchange=async()=>{
     renderAtt();inp.focus();
   }catch(e){add('No he podido leer ese archivo. Si es una foto, prueba con otra.','a')}
 };
+let tasks=[];
+try{tasks=JSON.parse(localStorage.getItem('rai-tasks')||'[]')}catch(e){}
+function saveTasks(){try{localStorage.setItem('rai-tasks',JSON.stringify(tasks))}catch(e){}}
+function taskText(){return tasks.length?tasks.map((x,i)=>(i+1)+'. ['+(x.d?'x':' ')+'] '+x.t).join('; '):'ninguna'}
+function renderTasks(){
+  const l=$('#taskList');l.innerHTML='';
+  if(!tasks.length){const e=document.createElement('div');e.style.color='var(--mut)';e.textContent='No hay tareas. Dile a RAI «apunta que tengo que…» o añádela aquí.';l.appendChild(e)}
+  tasks.forEach((x,i)=>{
+    const d=document.createElement('div');d.className='note'+(x.d?' done':'');
+    const c=document.createElement('button');c.textContent=x.d?'☑':'☐';
+    c.onclick=()=>{x.d=!x.d;saveTasks();renderTasks()};
+    const sp=document.createElement('span');sp.textContent=x.t;
+    const b=document.createElement('button');b.textContent='✕';
+    b.onclick=()=>{tasks.splice(i,1);saveTasks();renderTasks()};
+    d.append(c,sp,b);l.appendChild(d);
+  });
+  const p=tasks.filter(x=>!x.d).length;
+  $('#taskBtn').textContent='✅ Tareas'+(p?' ('+p+')':'');
+}
+function applyTasks(t){
+  let ch=false;
+  for(const m of t.matchAll(/\[\[TAREA:\s*([^\]]+)\]\]/gi)){const n=m[1].trim();if(n){tasks.push({t:n,d:false});ch=true}}
+  for(const m of t.matchAll(/\[\[HECHA:\s*(\d+)\s*\]\]/gi)){const i=parseInt(m[1])-1;if(tasks[i]){tasks[i].d=true;ch=true}}
+  const del=[...t.matchAll(/\[\[BORRAR:\s*(\d+)\s*\]\]/gi)].map(m=>parseInt(m[1])-1).filter(i=>tasks[i]).sort((a,b)=>b-a);
+  del.forEach(i=>{tasks.splice(i,1);ch=true});
+  if(ch){tasks=tasks.slice(-100);saveTasks();renderTasks()}
+}
+$('#taskBtn').onclick=()=>{renderTasks();$('#tasks').hidden=false};
+$('#closeTasks').onclick=()=>{$('#tasks').hidden=true};
+$('#addTask').onclick=()=>{const v=$('#newTask').value.trim();if(v){tasks.push({t:v,d:false});saveTasks();$('#newTask').value='';renderTasks()}};
+$('#clearDone').onclick=()=>{tasks=tasks.filter(x=>!x.d);saveTasks();renderTasks()};
+renderTasks();
+function showWa(t){
+  for(const m of t.matchAll(/\[\[WHATSAPP:\s*([^\]]+?)\s*::\s*([^\]]+)\]\]/gi)){
+    const who=m[1].trim(),msg=m[2].trim();
+    if(!who||!msg)continue;
+    const me=/^(yo|mí|mi|me|mismo)$/i.test(who);
+    const card=document.createElement('div');card.className='m a';
+    const info=document.createElement('div');
+    info.textContent='WhatsApp para '+(me?'ti':who)+':\n'+msg;
+    const b=document.createElement('button');b.className='wide';b.textContent='Enviar WhatsApp';b.style.marginTop='8px';
+    b.onclick=()=>{
+      location.href=me
+        ?'shortcuts://run-shortcut?name='+encodeURIComponent('RAI WhatsApp yo')+'&input=text&text='+encodeURIComponent(msg)
+        :'shortcuts://run-shortcut?name='+encodeURIComponent('RAI WhatsApp')+'&input=text&text='+encodeURIComponent(who+'::'+msg);
+    };
+    card.append(info,b);log.appendChild(card);log.scrollTop=log.scrollHeight;
+  }
+}
 function upd(){
   const c=document.body.classList,on=mic.classList.contains('on');
   c.toggle('listening',on&&!busy&&!speaking);
