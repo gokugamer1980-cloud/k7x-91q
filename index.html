@@ -66,6 +66,10 @@ h1{font-family:ui-monospace,Menlo,monospace;text-shadow:0 0 14px var(--ac)}
 .wide{width:100%;border-radius:12px;height:44px;font-size:16px}
 #out{width:100%;border-radius:12px;background:#000}
 #subs{font-size:16px;padding:10px;border-radius:12px;border:1px solid #12304a;background:var(--card);color:var(--fg);font-family:inherit;width:100%;box-sizing:border-box}
+#att{display:flex;align-items:center;gap:8px;margin:4px 12px 0;padding:8px 12px;border:1px solid #12304a;border-radius:12px;background:var(--card);font-size:14px;color:var(--fg)}
+#att[hidden]{display:none}
+#att span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#att button{width:28px;height:28px;font-size:13px}
 </style>
 </head>
 <body>
@@ -74,7 +78,8 @@ h1{font-family:ui-monospace,Menlo,monospace;text-shadow:0 0 14px var(--ac)}
 <div id="stat">EN ESPERA</div>
 <div id="log"></div>
 <div class="hint">Di «recuerda …» para que guarde algo · «olvida todo» para borrarlo</div>
-<div class="tools"><button id="conv" class="pill">🗣️ Modo conversación</button><button id="wakeBtn" class="pill">👂 Oye RAI</button>
+<div id="att" hidden></div>
+<div class="tools"><button id="attBtn" class="pill">📎 Documento o foto</button><input type="file" id="attFile" accept="image/*,application/pdf" hidden><button id="conv" class="pill">🗣️ Modo conversación</button><button id="wakeBtn" class="pill">👂 Oye RAI</button>
 <button id="memBtn" class="pill">🧠 Memoria</button></div>
 <div class="bar">
 <button id="film" title="Unir clips">🎞️</button>
@@ -127,10 +132,10 @@ function save(){try{localStorage.setItem('rai-notes',JSON.stringify(notes))}catc
 function add(t,c){const d=document.createElement('div');d.className='m '+c;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
 const MODEL='claude-sonnet-5-5';
 function getKey(){try{return localStorage.getItem('rai-key')||''}catch(e){return ''}}
-sample=async(prompt)=>{
+sample=async(prompt,att)=>{
   const k=getKey();
   if(!k)throw {code:'nokey'};
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:MODEL,max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:MODEL,max_tokens:3000,messages:[{role:'user',content:att?[{type:att.kind,source:{type:'base64',media_type:att.mime,data:att.data}},{type:'text',text:prompt}]:prompt}]})});
   const j=await res.json();
   if(!res.ok)throw {code:'api',msg:(j.error&&j.error.message)||res.status};
   return {text:(j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('')};
@@ -149,24 +154,26 @@ function speak(t){
 }
 async function send(text){
   text=(text||'').trim();
+  if(!text&&pending)text='Analiza este documento y explícamelo con palabras sencillas.';
   if(!text||busy)return;
   inp.value='';
-  add(text,'u');
+  add((pending?'📎 '+pending.name+'\n':'')+text,'u');
   if(/(une|unir|junta|juntar).*clip/i.test(text)){$('#join').hidden=false;add('Abro el unidor de clips.','a');return}
   const m=text.match(/^recuerda\s+(.+)/i);
   if(m){notes.push(m[1]);save()}
   if(/^olvida todo/i.test(text)){notes=[];hist=[];save();saveHist()}
   if(!getKey()){add('Primero pega tu clave de IA en el panel Memoria.','a');$('#memBtn').click();return}
   busy=true;document.body.classList.add('busy');
+  const att=pending;pending=null;renderAtt();
   const el=add('…','a');
-  const prompt='Eres RAI, el asistente personal del usuario. '+persona+' MODO DIRECTOR: si el usuario te pide escenas o prompts de vídeo para su serie, usa lo que sepas de ella en tu memoria (personajes, historia, estilo) y responde clip a clip (Clip 1, Clip 2...): una línea en español de qué pasa y el prompt completo para Kling en inglés, repitiendo SIEMPRE la descripción física de cada personaje para que no cambie de aspecto. Los clips salen sin audio, así que añade aparte el diálogo o texto para ponerlo después. Si faltan detalles, propónlos y pregunta si le gustan. En modo director puedes alargarte.\nLo que sabes del usuario (tu memoria): '+(notes.join('; ')||'todavía nada')+'. Si el usuario te cuenta algo importante y duradero sobre él, sus proyectos o sus gustos, o te pide que lo recuerdes, añade al final de tu respuesta una etiqueta [[RECORDAR: dato corto]] (puedes poner varias). No la uses para cosas pasajeras ni para datos sensibles como contraseñas o claves.\n\nConversación:\n'+hist.slice(-12).map(x=>(x.r==='u'?'Usuario: ':'RAI: ')+x.t).join('\n')+'\nUsuario: '+text+'\nRAI:';
+  const prompt='Eres RAI, el asistente personal del usuario. '+persona+' MODO DIRECTOR: si el usuario te pide escenas o prompts de vídeo para su serie, usa lo que sepas de ella en tu memoria (personajes, historia, estilo) y responde clip a clip (Clip 1, Clip 2...): una línea en español de qué pasa y el prompt completo para Kling en inglés, repitiendo SIEMPRE la descripción física de cada personaje para que no cambie de aspecto. Los clips salen sin audio, así que añade aparte el diálogo o texto para ponerlo después. Si faltan detalles, propónlos y pregunta si le gustan. En modo director puedes alargarte.\nSi el usuario adjunta un documento o una foto, analízalo con cuidado antes de responder y explícalo con palabras sencillas y paso a paso: qué es, qué dice y lo importante (plazos, importes, qué tiene que hacer). Si algo no se lee bien o no estás seguro, dilo claramente sin inventar. En temas legales, médicos o de dinero explica lo que pone, pero recuerda que no eres abogado ni médico.\nLo que sabes del usuario (tu memoria): '+(notes.join('; ')||'todavía nada')+'. Si el usuario te cuenta algo importante y duradero sobre él, sus proyectos o sus gustos, o te pide que lo recuerdes, añade al final de tu respuesta una etiqueta [[RECORDAR: dato corto]] (puedes poner varias). No la uses para cosas pasajeras ni para datos sensibles como contraseñas o claves.\n\nConversación:\n'+hist.slice(-12).map(x=>(x.r==='u'?'Usuario: ':'RAI: ')+x.t).join('\n')+'\nUsuario: '+text+'\nRAI:';
   try{
-    const r=await sample(prompt,{cache:false,onText:({text})=>{el.textContent=clean(text);log.scrollTop=log.scrollHeight}});
+    const r=await sample(prompt,att);
     const tags=[...r.text.matchAll(/\[\[RECORDAR:\s*([^\]]+)\]\]/gi)];
     if(tags.length){tags.forEach(t=>{const n=t[1].trim();if(n&&!notes.includes(n))notes.push(n)});notes=notes.slice(-60);save()}
     const out=clean(r.text);
     el.textContent=out;
-    hist.push({r:'u',t:text},{r:'a',t:out});hist=hist.slice(-40);saveHist();
+    hist.push({r:'u',t:(att?'[adjunto: '+att.name+'] ':'')+text},{r:'a',t:out});hist=hist.slice(-40);saveHist();
     speak(out);
   }catch(e){
     el.textContent=e&&e.code==='api'?'Error de la IA: '+e.msg:(e&&e.code==='nokey'?'Falta tu clave de IA.':'No he podido conectar. Revisa tu conexión y tu clave.');
@@ -323,6 +330,35 @@ $('#wakeBtn').onclick=()=>{
   const b=$('#wakeBtn');b.classList.add('on');b.textContent='👂 Esperando «Oye RAI»… (toca para parar)';
   try{if(window.speechSynthesis)speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}
   listen();
+};
+let pending=null;
+function renderAtt(){
+  const a=$('#att');
+  if(!pending){a.hidden=true;a.innerHTML='';return}
+  a.hidden=false;a.innerHTML='';
+  const sp=document.createElement('span');sp.textContent='📎 '+pending.name;
+  const b=document.createElement('button');b.textContent='✕';b.onclick=()=>{pending=null;renderAtt()};
+  a.append(sp,b);
+}
+function readB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(f)})}
+function imgToJpeg(f){return new Promise((res,rej)=>{
+  const u=URL.createObjectURL(f),i=new Image();
+  i.onload=()=>{const k=Math.min(1,1600/Math.max(i.width,i.height));const c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',0.85).split(',')[1])};
+  i.onerror=rej;i.src=u;
+})}
+$('#attBtn').onclick=()=>$('#attFile').click();
+$('#attFile').onchange=async()=>{
+  const f=$('#attFile').files[0];$('#attFile').value='';
+  if(!f)return;
+  try{
+    if(f.type==='application/pdf'){
+      if(f.size>20*1024*1024){add('Ese PDF es demasiado grande. Prueba con uno de menos de 20 MB.','a');return}
+      pending={name:f.name,kind:'document',mime:'application/pdf',data:await readB64(f)};
+    }else if(f.type.startsWith('image/')){
+      pending={name:f.name||'foto',kind:'image',mime:'image/jpeg',data:await imgToJpeg(f)};
+    }else{add('Solo puedo leer fotos y PDF.','a');return}
+    renderAtt();inp.focus();
+  }catch(e){add('No he podido leer ese archivo. Si es una foto, prueba con otra.','a')}
 };
 function upd(){
   const c=document.body.classList,on=mic.classList.contains('on');
