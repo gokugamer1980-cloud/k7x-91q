@@ -130,6 +130,9 @@ h1{font-family:ui-monospace,Menlo,monospace;text-shadow:0 0 14px var(--ac)}
 <textarea id="persona" rows="6"></textarea>
 <button id="savePersona" class="wide">Guardar personalidad</button>
 <button id="resetPersona" class="wide">Restaurar la de origen</button>
+<button id="expBtn" class="wide">💾 Guardar copia de seguridad</button>
+<button id="impBtn" class="wide">📂 Restaurar copia</button>
+<input type="file" id="impFile" accept="application/json,.json" hidden>
 <button id="closeMem" class="wide">Cerrar</button>
 </div>
 <div id="join" hidden>
@@ -517,6 +520,27 @@ try{const w=localStorage.getItem('rai-web');webOn=w===null?true:w==='1'}catch(e)
 function updWeb(){const b=$('#webBtn');b.textContent='🌐 Internet: '+(webOn?'sí':'no');b.classList.toggle('on',webOn)}
 $('#webBtn').onclick=()=>{webOn=!webOn;try{localStorage.setItem('rai-web',webOn?'1':'0')}catch(e){}updWeb()};
 updWeb();
+const BK=['rai-notes','rai-tasks','rai-chats','rai-cur','rai-persona','rai-web'];
+$('#expBtn').onclick=async()=>{
+  const o={app:'rai',v:1};
+  try{BK.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)o[k]=v})}catch(e){}
+  const blob=new Blob([JSON.stringify(o)],{type:'application/json'});
+  const f=new File([blob],'rai-copia.json',{type:'application/json'});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rai-copia.json';document.body.appendChild(a);a.click();a.remove();
+};
+$('#impBtn').onclick=()=>$('#impFile').click();
+$('#impFile').onchange=async()=>{
+  const f=$('#impFile').files[0];$('#impFile').value='';
+  if(!f)return;
+  try{
+    const o=JSON.parse(await f.text());
+    if(o.app!=='rai')throw 0;
+    BK.forEach(k=>{if(typeof o[k]==='string')localStorage.setItem(k,o[k])});
+    location.reload();
+  }catch(e){alert('No he podido leer esa copia. Tiene que ser el archivo rai-copia.json.')}
+};
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 function upd(){
   const c=document.body.classList,on=mic.classList.contains('on');
   c.toggle('listening',on&&!busy&&!speaking);
