@@ -92,7 +92,8 @@ h1{font-family:ui-monospace,Menlo,monospace;text-shadow:0 0 14px var(--ac)}
 <div id="log"></div>
 <div class="hint">Di «recuerda …» para que guarde algo · «olvida todo» para borrarlo</div>
 <div id="att" hidden></div>
-<div class="tools"><button id="chatsBtn" class="pill">💬 Chats</button>
+<div class="tools"><button id="webBtn" class="pill">🌐 Internet: no</button>
+<button id="chatsBtn" class="pill">💬 Chats</button>
 <button id="attBtn" class="pill">📎 Documento o foto</button><input type="file" id="attFile" accept="image/*,application/pdf" hidden><button id="conv" class="pill">🗣️ Modo conversación</button><button id="wakeBtn" class="pill">👂 Oye RAI</button>
 <button id="taskBtn" class="pill">✅ Tareas</button>
 <button id="memBtn" class="pill">🧠 Memoria</button></div>
@@ -184,6 +185,7 @@ sample=async(systemPrompt,userContent,att)=>{
       model:MODEL,
       max_tokens:3000,
       system:systemPrompt,
+      tools:webOn?[{type:'web_search_20250305',name:'web_search',max_uses:3}]:undefined,
       messages:[{
         role:'user',
         content:att?[
@@ -223,7 +225,7 @@ async function send(text){
   busy=true;document.body.classList.add('busy');
   const att=pending;pending=null;renderAtt();
   const el=add('…','a');
-  const systemPrompt='<identity>\nEres RAI, el asistente personal del usuario. ' + persona + '\n</identity>\n\n<mode name="director">\nSI EL USUARIO PIDE ESCENAS O PROMPTS DE VÍDEO PARA SU SERIE:\n- Usa lo que sepas de ella en tu memoria (personajes, historia, estilo).\n- Responde clip a clip (Clip 1, Clip 2...): una línea en español de qué pasa y el prompt completo para Kling en inglés.\n- Repite SIEMPRE la descripción física de cada personaje para que no cambie de aspecto.\n- Los clips salen sin audio, así que añade aparte el diálogo o texto para ponerlo después.\n- Si faltan detalles, propónlos y pregunta si le gustan. En modo director puedes alargarte.\n</mode>\n\n<mode name="document_analysis">\nSI EL USUARIO ADJUNTA UN DOCUMENTO O UNA FOTO:\n- Analízalo con cuidado antes de responder y explícalo con palabras sencillas y paso a paso: qué es, qué dice y lo importante (plazos, importes, qué tiene que hacer).\n- Si algo no se lee bien o no estás seguro, dilo claramente sin inventar.\n- En temas legales, médicos o de dinero explica lo que pone, pero recuerda que no eres abogado ni médico.\n</mode>\n\n<context>\n- Tareas del usuario (lista numerada): '+taskText()+'.\n- Lo que sabes del usuario (tu memoria): '+(notes.join('; ')||'todavía nada')+'.\n</context>\n\n<rules>\n- TAREAS: Las cosas por hacer van a la lista de tareas. Si el usuario te pide apuntar algo o dice que tiene que hacer algo, añade al final de tu respuesta [[TAREA: texto corto]]. Si dice que ya hizo una tarea, marca [[HECHA: número]]. Para borrar una, [[BORRAR: número]]. Si te pregunta qué tiene pendiente, léeselas con calma. Confirma siempre en una frase corta.\n- WHATSAPP: Para mandar un WhatsApp añade al final [[WHATSAPP: destinatario :: mensaje]]; si es para el propio usuario pon yo como destinatario, y si es para otra persona usa el nombre tal como lo dijo el usuario. Nunca digas que el mensaje ya se ha enviado: di que pulse el botón para enviarlo.\n- MEMORIA: Si el usuario te cuenta algo importante y duradero sobre él, sus proyectos o sus gustos, o te pide que lo recuerdes, añade al final de tu respuesta una etiqueta [[RECORDAR: dato corto]] (puedes poner varias). No la uses para cosas pasajeras ni para datos sensibles como contraseñas o claves.\n</rules>';
+  const systemPrompt='<identity>\nEres RAI, el asistente personal del usuario. ' + persona + '\n</identity>\n\n<mode name="director">\nSI EL USUARIO PIDE ESCENAS O PROMPTS DE VÍDEO PARA SU SERIE:\n- Usa lo que sepas de ella en tu memoria (personajes, historia, estilo).\n- Responde clip a clip (Clip 1, Clip 2...): una línea en español de qué pasa y el prompt completo para Kling en inglés.\n- Repite SIEMPRE la descripción física de cada personaje para que no cambie de aspecto.\n- Los clips salen sin audio, así que añade aparte el diálogo o texto para ponerlo después.\n- Si faltan detalles, propónlos y pregunta si le gustan. En modo director puedes alargarte.\n</mode>\n\n<mode name="document_analysis">\nSI EL USUARIO ADJUNTA UN DOCUMENTO O UNA FOTO:\n- Analízalo con cuidado antes de responder y explícalo con palabras sencillas y paso a paso: qué es, qué dice y lo importante (plazos, importes, qué tiene que hacer).\n- Si algo no se lee bien o no estás seguro, dilo claramente sin inventar.\n- En temas legales, médicos o de dinero explica lo que pone, pero recuerda que no eres abogado ni médico.\n</mode>\n\n<context>\n- Tareas del usuario (lista numerada): '+taskText()+'.\n- Lo que sabes del usuario (tu memoria): '+(notes.join('; ')||'todavía nada')+'.\n</context>\n\n<rules>\n- TAREAS: Las cosas por hacer van a la lista de tareas. Si el usuario te pide apuntar algo o dice que tiene que hacer algo, añade al final de tu respuesta [[TAREA: texto corto]]. Si dice que ya hizo una tarea, marca [[HECHA: número]]. Para borrar una, [[BORRAR: número]]. Si te pregunta qué tiene pendiente, léeselas con calma. Confirma siempre en una frase corta.\n- WHATSAPP: Para mandar un WhatsApp añade al final [[WHATSAPP: destinatario :: mensaje]]; si es para el propio usuario pon yo como destinatario, y si es para otra persona usa el nombre tal como lo dijo el usuario. Nunca digas que el mensaje ya se ha enviado: di que pulse el botón para enviarlo.\n- MEMORIA: Si el usuario te cuenta algo importante y duradero sobre él, sus proyectos o sus gustos, o te pide que lo recuerdes, añade al final de tu respuesta una etiqueta [[RECORDAR: dato corto]] (puedes poner varias). No la uses para cosas pasajeras ni para datos sensibles como contraseñas o claves.\n- INTERNET: '+(webOn?'Tienes búsqueda en internet activada: úsala cuando haga falta para datos actuales (noticias, resultados, precios, el tiempo) y di de dónde sale la información.':'No tienes búsqueda en internet activada. Si el usuario pide datos en tiempo real, noticias o hechos recientes que no sepas, dilo con claridad, no inventes cifras ni datos actuales y sugiérele pulsar el botón 🌐 Internet para activar la búsqueda o pegarte el texto o los datos para analizarlos. No puedes abrir enlaces: si te pasa uno, pídele que pegue el contenido.')+'\n</rules>';
   const userContent='Conversación hasta ahora:\n'+hist.slice(-12).map(x=>(x.r==='u'?'Usuario: ':'RAI: ')+x.t).join('\n')+'\n\nÚltimo mensaje del usuario: '+text+'\n\nResponde ahora como RAI.';
   try{
     const r=await sample(systemPrompt,userContent,att);
@@ -510,6 +512,11 @@ function delChat(id){
 $('#chatsBtn').onclick=()=>{renderChats();$('#chats').hidden=false};
 $('#closeChats').onclick=()=>{$('#chats').hidden=true};
 $('#newChat').onclick=newChatFn;
+let webOn=false;
+try{const w=localStorage.getItem('rai-web');webOn=w===null?true:w==='1'}catch(e){}
+function updWeb(){const b=$('#webBtn');b.textContent='🌐 Internet: '+(webOn?'sí':'no');b.classList.toggle('on',webOn)}
+$('#webBtn').onclick=()=>{webOn=!webOn;try{localStorage.setItem('rai-web',webOn?'1':'0')}catch(e){}updWeb()};
+updWeb();
 function upd(){
   const c=document.body.classList,on=mic.classList.contains('on');
   c.toggle('listening',on&&!busy&&!speaking);
